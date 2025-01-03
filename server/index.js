@@ -42,7 +42,11 @@ const bookingSchema = new mongoose.Schema({
     };
   
     const currentDateTime = new Date();
-    const isToday = selectedDate.toDateString() === currentDateTime.toDateString();
+    const isToday = (
+      new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000).toDateString() === 
+      new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toDateString()
+    );
+
     const slots = {};
   
     for (const [meal, { start, end }] of Object.entries(mealTimes)) {

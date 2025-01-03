@@ -47,7 +47,7 @@ function App() {
       setSlots(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching slots:', error);
+      console.error('Error fetching slots:', error.message);
       setLoading(false);
     }
   };
