@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const DateTime = require('luxon').DateTime;
+// import { DateTime } from 'luxon';
 
 const app = express();
 const corsOptions ={
@@ -42,10 +44,15 @@ const bookingSchema = new mongoose.Schema({
     };
   
     const currentDateTime = new Date();
-    const isToday = (
-      new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000).toDateString() === 
-      new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toDateString()
-    );
+
+    const selectedDateTime = DateTime.fromJSDate(selectedDate).setZone('UTC');
+    const currentDateTimeNormalized = DateTime.fromJSDate(currentDateTime).setZone('UTC');
+
+    const isToday = selectedDateTime.toISODate() === currentDateTimeNormalized.toISODate();
+    // const isToday = (
+    //   new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000).toDateString() === 
+    //   new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toDateString()
+    // );
 
     const slots = {};
   
