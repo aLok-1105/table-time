@@ -6,8 +6,8 @@ const dotenv = require('dotenv');
 
 const app = express();
 const corsOptions ={
-  // origin:'https://traventure-iota.vercel.app', 
-  origin:'http://localhost:3000', 
+  origin:'https://table-time-henna.vercel.app', 
+  // origin:'http://localhost:3000', 
   credentials:true,         
 }
 app.use(cors(corsOptions));
