@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const DateTime = require('luxon').DateTime;
-// import { DateTime } from 'luxon';
 
 const app = express();
 const corsOptions ={
@@ -44,18 +42,20 @@ const bookingSchema = new mongoose.Schema({
     };
   
     const currentDateTime = new Date();
-
-    const selectedDateTime = DateTime.fromJSDate(selectedDate).setZone('UTC');
-    const currentDateTimeNormalized = DateTime.fromJSDate(currentDateTime).setZone('UTC');
-
-    const isToday = selectedDateTime.toISODate() === currentDateTimeNormalized.toISODate();
-    // const isToday = (
-    //   new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000).toDateString() === 
-    //   new Date(currentDateTime.getTime() - currentDateTime.getTimezoneOffset() * 60000).toDateString()
-    // );
-
+  
+    // Normalize both dates to UTC for comparison
+    const selectedDateUTC = new Date(selectedDate.toISOString());
+    const currentDateUTC = new Date(currentDateTime.toISOString());
+  
+    // Check if the selected date is today
+    const isToday =
+      selectedDateUTC.getUTCFullYear() === currentDateUTC.getUTCFullYear() &&
+      selectedDateUTC.getUTCMonth() === currentDateUTC.getUTCMonth() &&
+      selectedDateUTC.getUTCDate() === currentDateUTC.getUTCDate();
+  
     const slots = {};
   
+    // Generate slots for each meal time
     for (const [meal, { start, end }] of Object.entries(mealTimes)) {
       slots[meal] = [];
       for (let hour = start; hour < end; hour++) {
@@ -64,12 +64,13 @@ const bookingSchema = new mongoose.Schema({
     }
   
     if (isToday) {
-      const currentHour = currentDateTime.getHours();
-      const currentMinute = currentDateTime.getMinutes();
+      const currentHour = currentDateTime.getUTCHours();
+      const currentMinute = currentDateTime.getUTCMinutes();
   
       for (const meal of Object.keys(slots)) {
         slots[meal] = slots[meal].filter((slot) => {
           const [hours, minutes] = slot.split(':').map(Number);
+          // Filter out slots earlier than the current time
           if (hours > currentHour) {
             return true;
           } else if (hours === currentHour && minutes > currentMinute) {
@@ -82,6 +83,7 @@ const bookingSchema = new mongoose.Schema({
   
     return slots;
   };
+  
   
   
   app.get('/api/available-slots', async (req, res) => {
