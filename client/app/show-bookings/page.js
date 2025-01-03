@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, CircularProgress, Alert } from '@mui/material';
 import Navbar from '../components/Navbar';
+import { URL } from '../api';
 
 function ShowBookings() {
   const [bookings, setBookings] = useState([]);
@@ -12,8 +13,10 @@ function ShowBookings() {
 
   // Fetch all bookings from the backend
   const fetchBookings = async () => {
+    // console.log(URL);
     try {
-      const response = await axios.get('http://localhost:5000/api/bookings');
+      const response = await axios.get(`${URL}/api/bookings`);
+      
       setBookings(response.data);
       setLoading(false);
     } catch (error) {
@@ -25,7 +28,7 @@ function ShowBookings() {
   // Delete a booking
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/bookings/${id}`);
+      await axios.delete(`${URL}/api/bookings/${id}`);
       alert('Booking deleted successfully!');
       // Refresh bookings list
       fetchBookings();

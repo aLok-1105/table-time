@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Container, TextField, Button, MenuItem, Select, FormControl, InputLabel, Typography, CircularProgress, Box, Grid } from '@mui/material';
 import './App.css'
 import Navbar from './components/Navbar';
+import { URL } from './api';
 
 function App() {
   const [date, setDate] = useState(null);
@@ -41,7 +42,7 @@ function App() {
     const formattedDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000).toISOString().split('T')[0];
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/available-slots?date=${formattedDate}`
+        `${URL}/api/available-slots?date=${formattedDate}`
       );
       setSlots(response.data);
       setLoading(false);
@@ -54,13 +55,13 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/bookings', {
+      await axios.post(`${URL}/api/bookings`, {
         date: new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0],
         time: selectedSlot,
         name,
         contact,
         guests,
-      });
+      }, {withCredentials: true });
       alert(
         `Booking successful!\nDate: ${new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0]}\nTime: ${selectedSlot}\nName: ${name}\nContact: ${contact}\nGuests: ${guests}`
       );
